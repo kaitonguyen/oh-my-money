@@ -1,47 +1,53 @@
+// ignore_for_file: prefer_const_literals_to_create_immutables
+
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart';
+import 'package:oh_my_money/src/models/income_expense_list.dart';
+import 'package:oh_my_money/src/pages/home/widgets/item_tile.dart';
+import 'package:oh_my_money/src/pages/home/widgets/list.dart';
+import 'package:oh_my_money/src/pages/home/widgets/user_input.dart';
+import "package:provider/provider.dart";
 
 import 'package:flutter/services.dart'; // For rootBundle
 import 'package:json_theme/json_theme.dart';
-import 'package:oh_my_money/src/home/widgets/total_income.dart';
-import 'dart:convert'; // For jsonDecode
+import 'package:oh_my_money/src/pages/home/widgets/total_income.dart';
+import 'dart:convert';
+
+import 'package:oh_my_money/src/pages/home/widgets/total_spend.dart'; // For jsonDecode
 
 // import 'theme/theme.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-
-  final themeStr = await rootBundle.loadString('assets/themes/theme.json');
-  final themeJson = jsonDecode(themeStr);
-  final theme = ThemeDecoder.decodeThemeData(themeJson)!;
-
-  runApp(MyApp(theme: theme));
+  runApp(ChangeNotifierProvider(
+    create: (context) => IncomeAndExpenseList(),
+    builder: (context, child) => const MyApp(),
+  ));
 }
 
 class MyApp extends StatelessWidget {
-  final ThemeData theme;
-
-  const MyApp({Key? key, required this.theme}) : super(key: key);
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: "Sổ ghi nhận thu chi",
-      // theme: buildShrineTheme(),
-      theme: theme,
-      supportedLocales: const [
-        Locale('en', 'US'), // English
-        Locale('vi', 'VN'), // Vietnamese
+      theme: ThemeData(
+        appBarTheme: AppBarTheme(
+            color: Colors.green[600], foregroundColor: Colors.white),
+      ),
+      supportedLocales: [
+        const Locale('en', 'US'), // English
+        const Locale('vi', 'VN'), // Vietnamese
         // Add other locales if needed
       ],
-      localizationsDelegates: const [
+      localizationsDelegates: [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      locale: const Locale('vi', 'VN'), // Set the default locale
-      home: const MyHomePage(),
+      locale: Locale('vi', 'VN'), // Set the default locale
+      home: MyHomePage(),
     );
   }
 }
@@ -55,95 +61,17 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   String _text = "";
-  final TextEditingController _controller = TextEditingController();
-  final NumberFormat _numberFormat = NumberFormat("#,###");
 
-  // Function to split text and assign it to the _text variable
-  void _splitText(String value) {
-    // Check if the input text is empty
-    if (value.isEmpty) {
-      return;
-    }
+  double _totalIncome = 0;
+  double _totalExpend = 0;
 
-    // Split the input text by spaces
-    List<String> parts = value.split(' ');
-
-    // Check if the first part is "thu" or "chi"
-    String command = parts[0];
-    if (command.toLowerCase() != "thu" && command.toLowerCase() != "chi") {
-      // Show an alert dialog if the condition is not met
-      _showAlertDialog(context);
-      return;
-    }
-
-    // Check if the second part is a number
-    String money = parts[1];
-    String reason = parts.sublist(2).join(' ');
-
-    setState(() {
-      _text = "Đã $command $money ${command == 'thu' ? '' : 'để'} $reason";
-    });
-  }
-
-  // Function to show an alert dialog
-  void _showAlertDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text("Lệnh không hợp lệ"),
-          content: const Text('Lệnh bắt buộc là "thu" hoặc "chi".'),
-          actions: <Widget>[
-            TextButton(
-              child: const Text("OK"),
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  // Function to format the number as the user types
-  void _formatInput(String value) {
-    List<String> parts = value.split(' ');
-
-    if (parts.length < 2) {
-      return;
-    }
-
-    String money = parts[1];
-
-    // Remove all commas
-    money = money.replaceAll(',', '');
-
-    // Format the number with thousand separators
-    parts[1] = money.isNotEmpty && int.tryParse(money) != null
-        ? _numberFormat.format(int.parse(money))
-        : money;
-
-    // Join the parts back into a string
-    String newValue = parts.join(' ');
-
-    // Update the TextField with the formatted number
-    _controller.value = TextEditingValue(
-      text: newValue,
-      selection: TextSelection.collapsed(offset: newValue.length),
-    );
-  }
-
-  late TextEditingController _datePickerController;
-  DateTime? _selectedDate;
+  String? _selectedDate;
 
   @override
   void initState() {
     super.initState();
     // Initialize the controller with today's date
-    _datePickerController = TextEditingController(
-      text: DateFormat('dd/MM/yyyy').format(DateTime.now()),
-    );
+    _selectedDate = DateFormat('dd/MM/yyyy').format(DateTime.now());
   }
 
   Future<void> _selectDate(BuildContext context) async {
@@ -156,7 +84,7 @@ class _MyHomePageState extends State<MyHomePage> {
     if (picked != null) {
       setState(() {
         // Update the text field with the selected date
-        _datePickerController.text = DateFormat('dd/MM/yyyy').format(picked);
+        _selectedDate = DateFormat('dd/MM/yyyy').format(picked);
       });
     }
   }
@@ -165,47 +93,38 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Thu/chi hằng ngày"),
+        title: const Text("Thu/chi hàng ngày"),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          mainAxisAlignment:
-              MainAxisAlignment.spaceBetween, // Pushes TextField to bottom
+          mainAxisSize: MainAxisSize.max,
           children: <Widget>[
-            Column(children: <Widget>[
-              TextField(
-                  controller: _datePickerController,
-                  decoration: const InputDecoration(
-                      icon: Icon(Icons.calendar_today), //icon of text field
-                      labelText: "Ngày" //label text of field
-                      ),
-                  readOnly: true, // when true user cannot edit text
-                  onTap: () async {
-                    //when click we have to show the datepicker
-                    await _selectDate(context);
-                  }),
-            ]),
-            const TotalIncomeWidget(),
-            const SizedBox(height: 20),
-            Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+            Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  const Text('Cú pháp: [thu/chi] [số tiền] [nội dung]'),
-                  const SizedBox(height: 20),
-                  TextField(
-                    controller: _controller,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: "Nhập ghi chú hôm nay",
+                  Text(
+                    _selectedDate.toString(),
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
                     ),
-                    onChanged: _formatInput, // Format input as user types
-                    onSubmitted: (value) {
-                      _splitText(
-                          value); // Call the split function when text is submitted
-                    },
                   ),
-                ])
+                  IconButton(
+                      onPressed: () async {
+                        //when click we have to show the datepicker
+                        await _selectDate(context);
+                      },
+                      icon: const Icon(Icons.calendar_today))
+                ]),
+            const SizedBox(height: 25),
+            const TotalIncomeWidget(),
+            const SizedBox(height: 15),
+            const TotalExpend(),
+            const SizedBox(height: 15),
+            const TodayList(),
+            const SizedBox(height: 25),
+            const UserInput()
           ],
         ),
       ),
