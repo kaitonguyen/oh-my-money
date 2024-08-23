@@ -1,7 +1,7 @@
 import "package:flutter/material.dart";
 import "package:oh_my_money/src/models/income_expense.dart";
 import "package:oh_my_money/src/models/income_expense_list.dart";
-import "package:oh_my_money/src/pages/home/widgets/item_tile.dart";
+import 'package:oh_my_money/src/pages/daily_list/widgets/item_tile.dart';
 import "package:provider/provider.dart";
 
 class TodayList extends StatefulWidget {
@@ -17,14 +17,15 @@ class _TodayListState extends State<TodayList> {
     return Consumer<IncomeAndExpenseList>(
         builder: (context, list, child) => Expanded(
               child: Column(
-                mainAxisSize: MainAxisSize.max,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     "Chi Tiết",
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
-                  ),
-                  const SizedBox(
-                    height: 15,
+                    style: TextStyle(
+                        fontSize: Theme.of(context)
+                            .primaryTextTheme
+                            .headlineSmall
+                            ?.fontSize),
                   ),
                   Expanded(
                       child: ListView.builder(

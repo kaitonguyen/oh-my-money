@@ -48,8 +48,8 @@ class _UserInputState extends State<UserInput> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text("Lệnh không hợp lệ"),
-          content: const Text('Lệnh bắt buộc là "thu" hoặc "chi".'),
+          title: const Text("Cú pháp không hợp lệ"),
+          content: const Text('Bắt đầu bắt buộc là "thu" hoặc "chi".'),
           actions: <Widget>[
             TextButton(
               child: const Text("OK"),
@@ -73,8 +73,16 @@ class _UserInputState extends State<UserInput> {
         TextField(
           controller: _controller,
           decoration: const InputDecoration(
-            border: OutlineInputBorder(),
+            border: OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.black),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.black),
+            ),
             labelText: "Nhập ghi chú hôm nay",
+            floatingLabelStyle: TextStyle(color: Colors.black),
+            filled: true,
+            fillColor: Colors.white,
           ),
           onSubmitted: (value) {
             _splitText(value); // Call the split function when text is submitted

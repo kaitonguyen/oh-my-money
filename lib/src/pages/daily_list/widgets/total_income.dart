@@ -1,34 +1,36 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:oh_my_money/src/models/income_expense_list.dart';
+import 'package:oh_my_money/src/utils/utils.dart';
 import 'package:provider/provider.dart';
 
 class TotalIncomeWidget extends StatelessWidget {
-  const TotalIncomeWidget({Key? key}) : super(key: key);
-
+  TotalIncomeWidget({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: Colors.green[800],
+      color: Colors.lightGreenAccent,
       child: Padding(
         padding: const EdgeInsetsDirectional.symmetric(
-            vertical: 8.0, horizontal: 25.0),
+            vertical: 8.0, horizontal: 15.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            const Text(
-              'Total income:',
+            Text(
+              'Tổng thu:',
               style: TextStyle(
-                fontSize: 16,
-                color: Colors.white,
+                fontSize:
+                    Theme.of(context).primaryTextTheme.bodyLarge?.fontSize,
+                color: Colors.black,
               ),
             ),
             Consumer<IncomeAndExpenseList>(
                 builder: (context, list, child) => (Text(
-                      list.getIncome().toString(),
+                      formatNumber(list.getIncome(), 'vi'),
                       style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                        color: Colors.black,
                       ),
                     ))),
           ],
