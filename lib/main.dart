@@ -1,28 +1,32 @@
-// ignore_for_file: prefer_const_literals_to_create_immutables, unused_import
-
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:intl/intl.dart';
-import 'package:oh_my_money/src/models/income_expense_list.dart';
+import 'package:oh_my_money/src/models/date_time.dart';
+import 'package:oh_my_money/src/models/transaction/transaction_service.dart';
 import 'package:oh_my_money/src/pages/general/general.dart';
 import 'package:oh_my_money/src/pages/home/home.dart';
-import 'package:oh_my_money/src/pages/daily_list/widgets/item_tile.dart';
-import 'package:oh_my_money/src/pages/daily_list/widgets/list.dart';
-import 'package:oh_my_money/src/pages/daily_list/widgets/user_input.dart';
 import 'package:oh_my_money/src/utils/ui_const.dart';
 import "package:provider/provider.dart";
-
-import 'package:json_theme/json_theme.dart';
-import 'package:oh_my_money/src/pages/daily_list/widgets/total_income.dart';
-import 'dart:convert';
 
 // import 'theme/theme.dart';
 
 void main() async {
-  runApp(ChangeNotifierProvider(
-    create: (context) => IncomeAndExpenseList(),
-    builder: (context, child) => const MyApp(),
-  ));
+  WidgetsFlutterBinding.ensureInitialized();
+  await TransactionService.initialize();
+
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (context) => TransactionService(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => DateTimeProvider(DateTime.now()),
+        ),
+      ],
+      child: const MyApp(),
+      // builder: (context, child) => const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {

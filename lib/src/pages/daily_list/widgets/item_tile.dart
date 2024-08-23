@@ -1,19 +1,23 @@
 import "package:flutter/material.dart";
-import "package:intl/intl.dart";
-import "package:oh_my_money/src/models/income_expense.dart";
-import "package:oh_my_money/src/models/income_expense_list.dart";
+import "package:oh_my_money/src/models/transaction/transaction.dart";
+import "package:oh_my_money/src/models/transaction/transaction_service.dart";
 import "package:oh_my_money/src/utils/ui_const.dart";
+import "package:oh_my_money/src/utils/utils.dart";
 import "package:provider/provider.dart";
 
 class ItemTile extends StatelessWidget {
-  final IncomeAndExpense item;
+  final Transaction item;
   const ItemTile({super.key, required this.item});
 
   @override
   Widget build(BuildContext context) {
-    NumberFormat _numberFormat = NumberFormat("#,###.00");
+    // delete transaction
+    void deleteTransaction(int id) {
+      context.read<TransactionService>().deleteTransaction(id);
+    }
+
     return Container(
-      margin: const EdgeInsets.only(top: 15),
+      margin: const EdgeInsets.only(top: 5),
       decoration: BoxDecoration(
           color: Colors.white,
           border: Border.all(
@@ -33,17 +37,14 @@ class ItemTile extends StatelessWidget {
                 size: 30,
                 color: Colors.redAccent,
               ),
-        title: Text(_numberFormat.format(item.amount)),
-        subtitle:
-            Text(item.content.isNotEmpty ? item.content : "(Không nội dung)"),
+        title: Text(formatCurrency(item.amount, 'vi_VN', 'đ')),
+        subtitle: Text(item.note.isNotEmpty ? item.note : "(Không nội dung)"),
         trailing: IconButton(
           icon: const Icon(
             Icons.delete,
             color: Colors.redAccent,
           ),
-          onPressed: () =>
-              Provider.of<IncomeAndExpenseList>(context, listen: false)
-                  .removeFromList(item),
+          onPressed: () => deleteTransaction(item.id),
         ),
       ),
     );

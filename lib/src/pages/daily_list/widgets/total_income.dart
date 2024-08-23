@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 
 class TotalIncomeWidget extends StatelessWidget {
   TotalIncomeWidget({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -24,15 +25,16 @@ class TotalIncomeWidget extends StatelessWidget {
                 color: Colors.black,
               ),
             ),
-            Consumer<IncomeAndExpenseList>(
-                builder: (context, list, child) => (Text(
-                      formatNumber(list.getIncome(), 'vi'),
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                    ))),
+            // Consumer<IncomeAndExpenseList>(
+            //   builder: (context, list, child) => (Text(
+            //     formatNumber(list.getIncome(), 'vi'),
+            //     style: const TextStyle(
+            //       fontSize: 20,
+            //       fontWeight: FontWeight.bold,
+            //       color: Colors.black,
+            //     ),
+            //   )),
+            // ),
           ],
         ),
       ),

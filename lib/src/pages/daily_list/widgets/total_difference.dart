@@ -26,15 +26,16 @@ class TotalDifference extends StatelessWidget {
                 color: Colors.white,
               ),
             ),
-            Consumer<IncomeAndExpenseList>(
-                builder: (context, list, child) => (Text(
-                      formatNumber(list.getIncome() - list.getExpense(), 'vi'),
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ))),
+            // Consumer<IncomeAndExpenseList>(
+            //   builder: (context, list, child) => (Text(
+            //     formatNumber(list.getIncome() - list.getExpense(), 'vi'),
+            //     style: const TextStyle(
+            //       fontSize: 20,
+            //       fontWeight: FontWeight.bold,
+            //       color: Colors.white,
+            //     ),
+            //   )),
+            // ),
           ],
         ),
       ),

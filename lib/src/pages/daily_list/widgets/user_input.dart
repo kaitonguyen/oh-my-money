@@ -1,6 +1,6 @@
 import "package:flutter/material.dart";
-import "package:oh_my_money/src/models/income_expense.dart";
-import "package:oh_my_money/src/models/income_expense_list.dart";
+import "package:oh_my_money/src/models/date_time.dart";
+import "package:oh_my_money/src/models/transaction/transaction_service.dart";
 import "package:provider/provider.dart";
 
 class UserInput extends StatefulWidget {
@@ -12,35 +12,6 @@ class UserInput extends StatefulWidget {
 
 class _UserInputState extends State<UserInput> {
   final TextEditingController _controller = TextEditingController();
-
-  // Function to split text and assign it to the _text variable
-  void _splitText(String value) {
-    // Check if the input text is empty
-    if (value.isEmpty) {
-      return;
-    }
-
-    // Split the input text by spaces
-    List<String> parts = value.split(' ');
-
-    // Check if the first part is "thu" or "chi"
-    String command = parts[0];
-    if (command.toLowerCase() != "thu" && command.toLowerCase() != "chi") {
-      // Show an alert dialog if the condition is not met
-      _showAlertDialog(context);
-      return;
-    }
-
-    // Check if the second part is a number
-    String money = parts[1];
-    String reason = parts.sublist(2).join(' ');
-
-    if (command.isNotEmpty && money.isNotEmpty) {
-      Provider.of<IncomeAndExpenseList>(context, listen: false).addToList(
-          IncomeAndExpense(
-              command, double.parse(money), reason, DateTime.now()));
-    }
-  }
 
   // Function to show an alert dialog
   void _showAlertDialog(BuildContext context) {
@@ -65,6 +36,43 @@ class _UserInputState extends State<UserInput> {
 
   @override
   Widget build(BuildContext context) {
+    // Function to split text and assign it to the _text variable
+    void splitText(BuildContext context, String value) {
+      // Check if the input text is empty
+      if (value.isEmpty) {
+        return;
+      }
+
+      // Split the input text by spaces
+      List<String> parts = value.split(' ');
+
+      // Check if the first part is "thu" or "chi"
+      String command = parts[0];
+      if (command.toLowerCase() != "thu" && command.toLowerCase() != "chi") {
+        // Show an alert dialog if the condition is not met
+        _showAlertDialog(context);
+        return;
+      }
+
+      // Check if the second part is a number
+      String money = parts[1];
+      String reason = parts.sublist(2).join(' ');
+
+      if (command.isNotEmpty && money.isNotEmpty) {
+        // Provider.of<IncomeAndExpenseList>(context, listen: false).addToList(
+        //     IncomeAndExpense(
+        //         command, double.parse(money), reason, DateTime.now()));
+
+        // addTransaction(command, double.parse(money), reason,
+        //     context.read<DateTimeProvider>().selectedDateTime);
+        context.read<TransactionService>().addTransaction(
+            command,
+            double.parse(money),
+            reason,
+            context.read<DateTimeProvider>().selectedDateTime);
+      }
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -85,7 +93,8 @@ class _UserInputState extends State<UserInput> {
             fillColor: Colors.white,
           ),
           onSubmitted: (value) {
-            _splitText(value); // Call the split function when text is submitted
+            splitText(context,
+                value); // Call the split function when text is submitted
             _controller.clear(); // Clear the text field
           },
         ),

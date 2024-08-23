@@ -56,25 +56,33 @@ class _MonthViewItemState extends State<MonthViewItem> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Text(
-              _selectedMonth.toString(),
-              style: TextStyle(
-                  fontSize: Theme.of(context)
-                      .primaryTextTheme
-                      .headlineSmall
-                      ?.fontSize),
-            ),
-            IconButton(
-              onPressed: () async {
-                //when click we have to show the datepicker
-                await _selectMonth(context);
-              },
-              icon: Icon(Icons.edit_calendar),
-            ),
-          ],
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(UIConst.borderRadius),
+          ),
+          margin: EdgeInsets.only(bottom: 15),
+          padding: EdgeInsets.only(left: 15),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Text(
+                _selectedMonth.toString(),
+                style: TextStyle(
+                    fontSize: Theme.of(context)
+                        .primaryTextTheme
+                        .headlineSmall
+                        ?.fontSize),
+              ),
+              IconButton(
+                onPressed: () async {
+                  //when click we have to show the datepicker
+                  await _selectMonth(context);
+                },
+                icon: Icon(Icons.edit_calendar),
+              ),
+            ],
+          ),
         ),
         Expanded(
           child: Container(

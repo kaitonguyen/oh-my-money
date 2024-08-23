@@ -1,5 +1,4 @@
 import "package:flutter/material.dart";
-import "package:intl/intl.dart";
 import "package:oh_my_money/src/components/bottom_nav_bar.dart";
 import 'package:oh_my_money/src/pages/daily_list/daily_list.dart';
 import '../general/general.dart';
@@ -12,18 +11,10 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  String _text = "";
-
-  double _totalIncome = 0;
-  double _totalExpend = 0;
-
-  String? _selectedDate;
-
   @override
   void initState() {
     super.initState();
     // Initialize the controller with today's date
-    _selectedDate = DateFormat('dd/MM/yyyy').format(DateTime.now());
   }
 
   Future<void> _selectDate(BuildContext context) async {
@@ -36,7 +27,6 @@ class _MyHomePageState extends State<MyHomePage> {
     if (picked != null) {
       setState(() {
         // Update the text field with the selected date
-        _selectedDate = DateFormat('dd/MM/yyyy').format(picked);
       });
     }
   }

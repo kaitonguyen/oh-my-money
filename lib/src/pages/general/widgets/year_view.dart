@@ -10,20 +10,68 @@ class YearViewItem extends StatefulWidget {
   const YearViewItem({Key? key}) : super(key: key);
 
   @override
-  _YearViewItemState createState() => _YearViewItemState();
+  State<YearViewItem> createState() => _YearViewItemState();
 }
 
 class _YearViewItemState extends State<YearViewItem> {
   final List<DifferenceAmount> _list =
       DifferenceAmountList().getMonthView(DateTime.now().toString());
 
-  Future<void> onTapTile(BuildContext context) async => await showDialog(
+  Future<void> onTapTile(BuildContext context) => showDialog(
         context: context,
-        builder: (BuildContext context) => const Dialog(
-          child: Text(
-            "Clicked ",
-          ),
-        ),
+        builder: (BuildContext context) {
+          final TextEditingController _yearInputController =
+              TextEditingController();
+          return Dialog(
+            backgroundColor: Colors.white,
+            surfaceTintColor: Colors.transparent,
+            child: Padding(
+              padding: EdgeInsets.fromLTRB(25, 25, 25, 5),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  TextField(
+                    controller: _yearInputController,
+                    decoration: InputDecoration(
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Colors.blueAccent,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        child: Text(
+                          "Hủy",
+                          style: TextStyle(
+                            color: Colors.blueAccent,
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                      TextButton(
+                        child: Text(
+                          "OK",
+                          style: TextStyle(
+                            color: Colors.blueAccent,
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ],
+                  )
+                ],
+              ),
+            ),
+          );
+        },
       );
 
   String? _selectedMonth;
@@ -32,7 +80,7 @@ class _YearViewItemState extends State<YearViewItem> {
   void initState() {
     super.initState();
     // Initialize the controller with today's date
-    _selectedMonth = DateFormat('MM/yyyy').format(DateTime.now());
+    _selectedMonth = DateFormat('yyyy').format(DateTime.now());
   }
 
   Future<void> _selectMonth(BuildContext context) async {
@@ -56,22 +104,30 @@ class _YearViewItemState extends State<YearViewItem> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Text(
-              _selectedMonth.toString(),
-              style: TextStyle(
-                  fontSize: Theme.of(context)
-                      .primaryTextTheme
-                      .headlineSmall
-                      ?.fontSize),
-            ),
-            IconButton(
-              onPressed: () => onTapTile(context),
-              icon: const Icon(Icons.edit_calendar),
-            ),
-          ],
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(UIConst.borderRadius),
+          ),
+          margin: const EdgeInsets.only(bottom: 15),
+          padding: const EdgeInsets.only(left: 15),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Text(
+                _selectedMonth.toString(),
+                style: TextStyle(
+                    fontSize: Theme.of(context)
+                        .primaryTextTheme
+                        .headlineSmall
+                        ?.fontSize),
+              ),
+              IconButton(
+                onPressed: () => onTapTile(context),
+                icon: const Icon(Icons.edit_calendar),
+              ),
+            ],
+          ),
         ),
         Expanded(
           child: Container(
@@ -99,7 +155,7 @@ class _YearViewItemState extends State<YearViewItem> {
                     DateFormat("yyyy").format(_list[index].dateTime),
                   ),
                   trailing: Text(
-                    formatCurrency(_list[index].amount, 'vi_VN', "\đ"),
+                    formatCurrency(_list[index].amount, 'vi_VN', "đ"),
                     style: TextStyle(
                         color: _list[index].amount < 0
                             ? Colors.redAccent
