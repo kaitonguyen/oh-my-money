@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:logger/logger.dart';
 import 'package:oh_my_money/src/models/date_time.dart';
 import 'package:oh_my_money/src/models/transaction/transaction_service.dart';
 import 'package:oh_my_money/src/pages/general/general.dart';
@@ -119,12 +120,12 @@ class MyApp extends StatelessWidget {
         ),
       ),
 
-      supportedLocales: [
-        const Locale('en', 'US'), // English
-        const Locale('vi', 'VN'), // Vietnamese
+      supportedLocales: const [
+        Locale('en', 'US'), // English
+        Locale('vi', 'VN'), // Vietnamese
         // Add other locales if needed
       ],
-      localizationsDelegates: [
+      localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,

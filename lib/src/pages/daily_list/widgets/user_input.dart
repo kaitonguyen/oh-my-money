@@ -36,43 +36,6 @@ class _UserInputState extends State<UserInput> {
 
   @override
   Widget build(BuildContext context) {
-    // Function to split text and assign it to the _text variable
-    void splitText(BuildContext context, String value) {
-      // Check if the input text is empty
-      if (value.isEmpty) {
-        return;
-      }
-
-      // Split the input text by spaces
-      List<String> parts = value.split(' ');
-
-      // Check if the first part is "thu" or "chi"
-      String command = parts[0];
-      if (command.toLowerCase() != "thu" && command.toLowerCase() != "chi") {
-        // Show an alert dialog if the condition is not met
-        _showAlertDialog(context);
-        return;
-      }
-
-      // Check if the second part is a number
-      String money = parts[1];
-      String reason = parts.sublist(2).join(' ');
-
-      if (command.isNotEmpty && money.isNotEmpty) {
-        // Provider.of<IncomeAndExpenseList>(context, listen: false).addToList(
-        //     IncomeAndExpense(
-        //         command, double.parse(money), reason, DateTime.now()));
-
-        // addTransaction(command, double.parse(money), reason,
-        //     context.read<DateTimeProvider>().selectedDateTime);
-        context.read<TransactionService>().addTransaction(
-            command,
-            double.parse(money),
-            reason,
-            context.read<DateTimeProvider>().selectedDateTime);
-      }
-    }
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -93,8 +56,32 @@ class _UserInputState extends State<UserInput> {
             fillColor: Colors.white,
           ),
           onSubmitted: (value) {
-            splitText(context,
-                value); // Call the split function when text is submitted
+            if (value.isEmpty) {
+              return;
+            }
+
+            List<String> parts = value.split(' ');
+
+            // Check if the first part is "thu" or "chi"
+            String command = parts[0];
+            if (command.toLowerCase() != "thu" &&
+                command.toLowerCase() != "chi") {
+              // Show an alert dialog if the condition is not met
+              _showAlertDialog(context);
+              return;
+            }
+
+            // Check if the second part is a number
+            String money = parts[1];
+            String reason = parts.sublist(2).join(' ');
+
+            if (command.isNotEmpty && money.isNotEmpty) {
+              context.read<TransactionService>().addTransaction(
+                  command,
+                  double.parse(money),
+                  reason,
+                  context.read<DateTimeProvider>().selectedDateTime);
+            }
             _controller.clear(); // Clear the text field
           },
         ),

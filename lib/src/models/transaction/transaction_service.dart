@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
+import 'package:logger/logger.dart';
 import 'package:oh_my_money/src/models/transaction/transaction.dart';
 import 'package:path_provider/path_provider.dart';
+
+final Logger logger = Logger();
 
 class TransactionService extends ChangeNotifier {
   static late Isar isar;
@@ -27,7 +30,7 @@ class TransactionService extends ChangeNotifier {
       ..note = note
       ..createdAt = createdAt;
 
-    isar.writeTxn(() => isar.transactions.put(newTransaction));
+    await isar.writeTxn(() => isar.transactions.put(newTransaction));
 
     // re-read from database
     fetchTransactions();
@@ -40,6 +43,7 @@ class TransactionService extends ChangeNotifier {
     transactions.clear();
     transactions.addAll(fetchedTransactions);
     notifyListeners();
+    logger.d(fetchedTransactions.toString());
   }
 
   // update
